@@ -1,0 +1,162 @@
+:root {
+    --bg-color: #0d0e15;
+    --text-color: #fff;
+    --accent-color: #00ff9d;
+    /* Retro green */
+    --danger-color: #ff0055;
+    --font-family: 'Courier New', Courier, monospace;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-canvas {
+    background-color: #000;
+    box-shadow: 0 0 20px rgba(0, 255, 157, 0.2);
+    border: 2px solid #333;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#score-board {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--accent-color);
+    text-shadow: 0 0 5px var(--accent-color);
+}
+
+.screen {
+    background: rgba(13, 14, 21, 0.85);
+    padding: 40px 60px;
+    border: 2px solid var(--accent-color);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 0 30px rgba(0, 255, 157, 0.3);
+    backdrop-filter: blur(5px);
+    transition: opacity 0.3s ease;
+}
+
+.screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+    display: none;
+    /* simple hide for now */
+}
+
+h1 {
+    font-size: 48px;
+    color: var(--accent-color);
+    text-shadow: 0 0 10px var(--accent-color);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+}
+
+p {
+    font-size: 20px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Touch Controls */
+#touch-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    pointer-events: auto;
+    z-index: 100;
+}
+
+.touch-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    color: white;
+    font-size: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    outline: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.touch-btn:active {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.fire-btn {
+    background: rgba(255, 0, 85, 0.3);
+    border-color: rgba(255, 0, 85, 0.6);
+}
+
+#btn-left {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}
+
+#btn-right {
+    position: absolute;
+    bottom: 20px;
+    left: 120px;
+}
+
+#btn-fire {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 90px;
+    height: 90px;
+}

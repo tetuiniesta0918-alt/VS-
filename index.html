@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Invaders Clone</title>
+    <link rel="stylesheet" href="src/style.css">
+</head>
+
+<body>
+    <div id="ui-layer">
+        <div id="score-board">
+            SCORE: <span id="score">0</span>
+            <span style="margin-left: 20px; color: #ff0055;">HI: <span id="high-score">0</span></span>
+        </div>
+        <div id="start-screen" class="screen active">
+            <h1>SPACE INVADERS</h1>
+            <p>PRESS ENTER TO START</p>
+        </div>
+        <div id="game-over-screen" class="screen hidden">
+            <h1>GAME OVER</h1>
+            <p>FINAL SCORE: <span id="final-score">0</span></p>
+            <p>PRESS ENTER TO RESTART</p>
+        </div>
+        <div id="touch-controls">
+            <button id="btn-left" class="touch-btn">◀</button>
+            <button id="btn-fire" class="touch-btn fire-btn">🔥</button>
+            <button id="btn-right" class="touch-btn">▶</button>
+        </div>
+    </div>
+    <canvas id="game-canvas"></canvas>
+    <script type="module" src="src/main.js"></script>
+</body>
+
+</html>
