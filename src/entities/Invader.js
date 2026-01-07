@@ -10,7 +10,7 @@ export class Invader extends Entity {
 
         if (!Invader.image) {
             Invader.image = new Image();
-            Invader.image.src = '/assets/fellaini.png';
+            Invader.image.src = 'assets/fellaini.png';
             Invader.image.onload = () => console.log("Invader image loaded successfully");
             Invader.image.onerror = (e) => console.error("Failed to load invader image", e);
         }
