@@ -13,7 +13,8 @@ export class Player extends Entity {
 
         this.speed = 0.5; // pixels per ms
         this.shootTimer = 0;
-        this.shootInterval = 300; // ms
+        this.shootInterval = 265; // ms (90% of previous speed)
+        this.doubleShotTimer = 0; // Power-up duration
     }
 
     update(deltaTime) {
@@ -31,18 +32,30 @@ export class Player extends Entity {
             this.shoot();
         }
 
+        // Double shot timer countdown
+        if (this.doubleShotTimer > 0) this.doubleShotTimer -= deltaTime;
+
         // Clamp to screen
         if (this.x < 0) this.x = 0;
         if (this.x > this.game.width - this.width) this.x = this.game.width - this.width;
     }
 
     shoot() {
-        // Shoot from center
         const projectileX = this.x + this.width / 2 - 2;
         this.game.projectiles.push(new Projectile(this.game, projectileX, this.y, -1));
-        this.shootTimer = this.shootInterval;
 
+        // Double shot if power-up active
+        if (this.doubleShotTimer > 0) {
+            this.game.projectiles.push(new Projectile(this.game, projectileX - 15, this.y, -1));
+            this.game.projectiles.push(new Projectile(this.game, projectileX + 15, this.y, -1));
+        }
+
+        this.shootTimer = this.shootInterval;
         this.game.sound.playShoot();
+    }
+
+    activateDoubleShot() {
+        this.doubleShotTimer = 5000; // 5 seconds of double shot
     }
 
     draw(ctx) {

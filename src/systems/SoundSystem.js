@@ -72,115 +72,70 @@ export class SoundSystem {
         if (this.ctx.state === 'suspended') this.ctx.resume();
         this.stopBGM();
 
-        this.bgmNodes = [];
-        const tempo = 170; // High tempo for intense battle
-        const self = this;
+        // Cynthia-style BGM with bass + arpeggio melody (mobile-friendly)
+        // Using continuous oscillators with frequency modulation instead of sequencer
 
-        // Simple sequencer function
-        const lookahead = 25.0; // How frequently to call scheduling function (in milliseconds)
-        const scheduleAheadTime = 0.1; // How far ahead to schedule audio (sec)
-        let nextNoteTime = this.ctx.currentTime;
-        let noteIndex = 0;
+        // Bass oscillator
+        this.bassOsc = this.ctx.createOscillator();
+        this.bassGain = this.ctx.createGain();
+        this.bassOsc.type = 'sawtooth';
+        this.bassOsc.frequency.value = 73.42; // D2
 
-        // "Champion" style intro/loop pattern (Simplified representation)
-        // D minorish, driving
-        const bassLine = [
-            38, 38, 41, 41, 43, 43, 41, 41, // D, F, G, F
-            38, 38, 41, 41, 43, 43, 45, 45  // D, F, G, A
-        ];
+        // Bass LFO for rhythm
+        const bassLfo = this.ctx.createOscillator();
+        bassLfo.type = 'square';
+        bassLfo.frequency.value = 6; // Fast 6Hz pulse for intensity
+        const bassLfoGain = this.ctx.createGain();
+        bassLfoGain.gain.value = 30;
+        bassLfo.connect(bassLfoGain);
+        bassLfoGain.connect(this.bassOsc.frequency);
 
-        const melodyLine = [
-            // Fast arpeggios simulation (E, G, B, E...)
-            74, 0, 77, 0, 79, 0, 81, 0,
-            74, 0, 77, 0, 79, 0, 77, 0
-        ];
+        // Bass filter
+        const bassFilter = this.ctx.createBiquadFilter();
+        bassFilter.type = 'lowpass';
+        bassFilter.frequency.value = 400;
+        bassFilter.Q.value = 3;
 
-        function scheduler() {
-            while (nextNoteTime < self.ctx.currentTime + scheduleAheadTime) {
-                scheduleNote(noteIndex, nextNoteTime);
-                nextNote();
-            }
-            if (self.bgmTimeout) clearTimeout(self.bgmTimeout);
-            self.bgmTimeout = setTimeout(scheduler, lookahead);
-        }
+        this.bassOsc.connect(bassFilter);
+        bassFilter.connect(this.bassGain);
+        this.bassGain.connect(this.ctx.destination);
+        this.bassGain.gain.value = 0.12;
 
-        function nextNote() {
-            const secondsPerBeat = 60.0 / tempo;
-            nextNoteTime += 0.25 * secondsPerBeat; // 16th notes
-            noteIndex++;
-            if (noteIndex >= 16) noteIndex = 0;
-        }
+        // Melody oscillator (high arpeggio feel)
+        this.melodyOsc = this.ctx.createOscillator();
+        this.melodyGain = this.ctx.createGain();
+        this.melodyOsc.type = 'triangle';
+        this.melodyOsc.frequency.value = 587.33; // D5
 
-        function scheduleNote(beatNumber, time) {
-            // Bass
-            const bassOsc = self.ctx.createOscillator();
-            const bassGain = self.ctx.createGain();
-            bassOsc.type = 'sawtooth';
-            const bassNote = bassLine[beatNumber % 16];
-            if (bassNote) {
-                bassOsc.frequency.value = 440 * Math.pow(2, (bassNote - 69) / 12);
+        // Melody LFO for arpeggio sweep
+        const melodyLfo = this.ctx.createOscillator();
+        melodyLfo.type = 'sine';
+        melodyLfo.frequency.value = 8; // 8Hz for fast arpeggio feeling
+        const melodyLfoGain = this.ctx.createGain();
+        melodyLfoGain.gain.value = 200; // Wide sweep
+        melodyLfo.connect(melodyLfoGain);
+        melodyLfoGain.connect(this.melodyOsc.frequency);
 
-                // Filter for "acid" bass sound
-                const filter = self.ctx.createBiquadFilter();
-                filter.type = 'lowpass';
-                filter.Q.value = 5;
-                filter.frequency.setValueAtTime(400, time);
-                filter.frequency.exponentialRampToValueAtTime(3000, time + 0.1);
+        this.melodyOsc.connect(this.melodyGain);
+        this.melodyGain.connect(this.ctx.destination);
+        this.melodyGain.gain.value = 0.06;
 
-                bassOsc.connect(filter);
-                filter.connect(bassGain);
-                bassGain.connect(self.ctx.destination);
+        // Start all
+        this.bassOsc.start();
+        bassLfo.start();
+        this.melodyOsc.start();
+        melodyLfo.start();
 
-                bassGain.gain.setValueAtTime(0.15, time);
-                bassGain.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
-
-                bassOsc.start(time);
-                bassOsc.stop(time + 0.15);
-            }
-
-            // Piano/Synth Lead (High arpeggios)
-            const melodyOsc = self.ctx.createOscillator();
-            const melodyGain = self.ctx.createGain();
-            melodyOsc.type = 'triangle'; // Closer to piano/bell
-            const melodyNote = melodyLine[beatNumber % 16];
-
-            if (melodyNote > 0) {
-                melodyOsc.frequency.value = 440 * Math.pow(2, (melodyNote - 69) / 12);
-                melodyOsc.connect(melodyGain);
-                melodyGain.connect(self.ctx.destination);
-
-                melodyGain.gain.setValueAtTime(0.0, time);
-                melodyGain.gain.linearRampToValueAtTime(0.1, time + 0.01);
-                melodyGain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
-
-                melodyOsc.start(time);
-                melodyOsc.stop(time + 0.2);
-            }
-
-            // Drum (Hi-hat click) every note to keep rhythm
-            const noiseOsc = self.ctx.createOscillator(); // Using high sine for simple hat for now to save CPU
-            // Actually buffer noise is better but let's stick to osc
-            const drumGain = self.ctx.createGain();
-            noiseOsc.type = 'square';
-            noiseOsc.frequency.value = 8000;
-            noiseOsc.connect(drumGain);
-            drumGain.connect(self.ctx.destination);
-            drumGain.gain.setValueAtTime(0.02, time);
-            drumGain.gain.exponentialRampToValueAtTime(0.001, time + 0.05);
-            noiseOsc.start(time);
-            noiseOsc.stop(time + 0.05);
-        }
-
-        this.bgmTimeout = setTimeout(scheduler, lookahead);
-        this.isPlaying = true;
+        this.bgmNodes = [this.bassOsc, bassLfo, this.melodyOsc, melodyLfo, bassLfoGain, melodyLfoGain, bassFilter, this.bassGain, this.melodyGain];
     }
 
     stopBGM() {
-        if (this.bgmTimeout) {
-            clearTimeout(this.bgmTimeout);
-            this.bgmTimeout = null;
+        if (this.bgmNodes) {
+            this.bgmNodes.forEach(node => {
+                try { node.stop(); } catch (e) { }
+                try { node.disconnect(); } catch (e) { }
+            });
+            this.bgmNodes = null;
         }
-        this.isPlaying = false;
-        // Nodes are created per note and stop automatically, so just stopping scheduler is enough
     }
 }

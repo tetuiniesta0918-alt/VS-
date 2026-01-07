@@ -14,4 +14,35 @@ export class Projectile extends Entity {
             this.markedForDeletion = true;
         }
     }
+
+    draw(ctx) {
+        ctx.save();
+
+        // Glow effect
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = this.color;
+
+        if (this.direction === -1) {
+            // Player projectile - fancy laser
+            const gradient = ctx.createLinearGradient(this.x, this.y, this.x, this.y + this.height);
+            gradient.addColorStop(0, '#ffffff');
+            gradient.addColorStop(0.3, this.color);
+            gradient.addColorStop(1, 'rgba(0, 255, 157, 0.3)');
+            ctx.fillStyle = gradient;
+
+            // Main beam
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+
+            // Core (brighter center)
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(this.x + 1, this.y, 2, this.height * 0.6);
+        } else {
+            // Enemy projectile - red beam
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+
+        ctx.restore();
+    }
 }
+

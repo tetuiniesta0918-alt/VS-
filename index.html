@@ -11,17 +11,38 @@
 <body>
     <div id="ui-layer">
         <div id="score-board">
-            SCORE: <span id="score">0</span>
-            <span style="margin-left: 20px; color: #ff0055;">HI: <span id="high-score">0</span></span>
+            LV: <span id="level">1</span>
+            <span style="margin-left: 15px;">SCORE: <span id="score">0</span></span>
+            <span style="margin-left: 15px; color: #ff0055;">HI: <span id="high-score">0</span></span>
         </div>
         <div id="start-screen" class="screen active">
             <h1>SPACE INVADERS</h1>
             <p>PRESS ENTER TO START</p>
+            <button id="btn-start" class="game-btn">▶ START</button>
         </div>
         <div id="game-over-screen" class="screen hidden">
+            <div class="taunt-cutin">
+                <img src="assets/fellaini.png" alt="Fellaini" class="taunt-img">
+                <p class="taunt-text">「弱すぎ！😂」</p>
+            </div>
             <h1>GAME OVER</h1>
             <p>FINAL SCORE: <span id="final-score">0</span></p>
-            <p>PRESS ENTER TO RESTART</p>
+            <button id="btn-restart" class="game-btn">🔄 RESTART</button>
+        </div>
+        <div id="victory-screen" class="screen hidden">
+            <h1>🎉 VICTORY! 🎉</h1>
+            <p>YOU CLEARED ALL 5 LEVELS!</p>
+            <p>FINAL SCORE: <span id="victory-score">0</span></p>
+            <button id="btn-victory-restart" class="game-btn">🔄 PLAY AGAIN</button>
+        </div>
+        <div id="level-clear-screen" class="screen hidden">
+            <div class="clear-cutin">
+                <span class="clear-emoji">🎊</span>
+                <h2>LEVEL <span id="clear-level">1</span> CLEAR!</h2>
+                <span class="clear-emoji">🎊</span>
+            </div>
+            <p>SCORE: <span id="clear-score">0</span></p>
+            <button id="btn-next-level" class="game-btn">➡ NEXT LEVEL</button>
         </div>
         <div id="touch-controls">
             <button id="btn-left" class="touch-btn">◀</button>

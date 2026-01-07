@@ -3,8 +3,10 @@ import { Entity } from './Entity.js';
 export class Invader extends Entity {
     static image = null;
 
-    constructor(game, x, y) {
+    constructor(game, x, y, hp = 1) {
         super(game, x, y, 40, 50, '#ff0055');
+        this.hp = hp; // HP for tough enemies
+        this.maxHp = hp;
 
         if (!Invader.image) {
             Invader.image = new Image();
@@ -13,9 +15,18 @@ export class Invader extends Entity {
             Invader.image.onerror = (e) => console.error("Failed to load invader image", e);
         }
 
-        this.state = 'GRID'; // GRID, DIVING, RETURNING (maybe just DIVING for now)
+        this.state = 'GRID'; // GRID, DIVING, RETURNING
         this.vx = 0;
         this.vy = 0;
+    }
+
+    takeDamage() {
+        this.hp--;
+        if (this.hp <= 0) {
+            this.markedForDeletion = true;
+            return true; // Enemy killed
+        }
+        return false; // Enemy still alive
     }
 
     startDive() {
@@ -52,12 +63,34 @@ export class Invader extends Entity {
     }
 
     draw(ctx) {
+        ctx.save();
+
+        // 2HP enemies have a red glow and shield overlay
+        if (this.maxHp >= 2) {
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = this.hp === 2 ? '#ff0000' : '#ff6600';
+        }
+
         if (Invader.image && Invader.image.complete) {
             ctx.drawImage(Invader.image, this.x, this.y, this.width, this.height);
+
+            // Shield indicator for 2HP enemies
+            if (this.maxHp >= 2 && this.hp === 2) {
+                ctx.strokeStyle = '#ff0000';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(this.x - 2, this.y - 2, this.width + 4, this.height + 4);
+
+                // HP indicator
+                ctx.fillStyle = '#ff0000';
+                ctx.font = 'bold 12px Arial';
+                ctx.fillText('×2', this.x + this.width - 15, this.y + 12);
+            }
         } else {
             // Fallback while loading
-            ctx.fillStyle = '#4a3b2a';
+            ctx.fillStyle = this.maxHp >= 2 ? '#8b0000' : '#4a3b2a';
             ctx.fillRect(this.x, this.y, this.width, this.height);
         }
+
+        ctx.restore();
     }
 }

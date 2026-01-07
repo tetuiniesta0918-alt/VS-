@@ -103,6 +103,61 @@ p {
     }
 }
 
+/* Start/Restart Buttons */
+.game-btn {
+    padding: 15px 40px;
+    font-size: 20px;
+    font-family: var(--font-family);
+    background: var(--accent-color);
+    color: var(--bg-color);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+    pointer-events: auto;
+}
+
+.game-btn:active {
+    transform: scale(0.95);
+}
+
+/* Taunt Cut-in */
+.taunt-cutin {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    animation: tauntSlide 0.5s ease-out;
+}
+
+.taunt-img {
+    width: 80px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 3px solid var(--accent-color);
+}
+
+.taunt-text {
+    font-size: 28px;
+    color: #ffcc00;
+    text-shadow: 0 0 10px #ffcc00;
+    animation: none;
+}
+
+@keyframes tauntSlide {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
 /* Touch Controls */
 #touch-controls {
     position: absolute;
